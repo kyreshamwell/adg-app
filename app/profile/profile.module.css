@@ -1,0 +1,182 @@
+/* Profile Page - iOS Style */
+
+.container {
+  min-height: 100vh;
+  background: #000000;
+  padding-bottom: 6rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: #000000;
+}
+
+.title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Sections */
+.section {
+  padding: 0 1rem 2rem 1rem;
+}
+
+.sectionTitle {
+  color: #8e8e93;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.75rem 0.5rem;
+}
+
+/* Profile card */
+.profileCard {
+  background: #1c1c1e;
+  border-radius: 0.625rem;
+  padding: 2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: #2c2c2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarText {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.userPhone {
+  color: #8e8e93;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Settings card */
+.settingsCard {
+  background: #1c1c1e;
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+}
+
+.settingInfo {
+  flex: 1;
+}
+
+.settingLabel {
+  color: white;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  margin: 0 0 0.25rem 0;
+}
+
+.settingDesc {
+  color: #8e8e93;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Toggle switch */
+.toggle {
+  width: 3rem;
+  height: 1.75rem;
+  border-radius: 1rem;
+  background: #38383a;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggleActive {
+  background: #34c759;
+}
+
+.toggleSlider {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+}
+
+.toggleActive .toggleSlider {
+  transform: translateX(1.25rem);
+}
+
+/* Action buttons */
+.editButton {
+  width: 100%;
+  background: #1c1c1e;
+  color: white;
+  border: none;
+  padding: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0.625rem;
+  margin-bottom: 0.75rem;
+}
+
+.editButton:active {
+  background: #2c2c2e;
+}
+
+.logoutButton {
+  width: 100%;
+  background: transparent;
+  color: #ff3b30;
+  border: 1px solid #ff3b30;
+  padding: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 0.625rem;
+}
+
+.logoutButton:active {
+  background: #ff3b30;
+  color: white;
+}

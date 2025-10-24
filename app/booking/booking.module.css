@@ -1,0 +1,202 @@
+/* Booking Page - iOS Style */
+
+.container {
+  min-height: 100vh;
+  background: #000000;
+  padding-bottom: 6rem;
+  max-width: 480px;
+  margin: 0 auto;
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: #000000;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.backButton {
+  background: transparent;
+  color: #8e8e93;
+  border: none;
+  padding: 0.5rem 0;
+  font-size: 1.0625rem;
+  cursor: pointer;
+  transition: color 0.15s;
+  margin-bottom: 1rem;
+}
+
+.backButton:active {
+  color: white;
+}
+
+.serviceInfo {
+  margin-bottom: 0.5rem;
+}
+
+.serviceName {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.serviceDetails {
+  color: #8e8e93;
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+/* Section titles */
+.sectionTitle {
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  padding: 0 1.5rem;
+}
+
+/* Week view */
+.weekContainer {
+  margin-bottom: 2rem;
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+}
+
+.dayCard {
+  background: #1c1c1e;
+  border: 1px solid #1c1c1e;
+  padding: 0.75rem 0.25rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.dayCard:active {
+  background: #2c2c2e;
+}
+
+.dayCardActive {
+  background: #2c2c2e;
+  border-color: white;
+}
+
+.dayName {
+  color: #8e8e93;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.dayDate {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.dayMonth {
+  color: #8e8e93;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+}
+
+/* Time slots */
+.timeSlotsContainer {
+  margin-bottom: 2rem;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timeSlots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0 1.5rem;
+}
+
+.timeSlot {
+  background: #1c1c1e;
+  border: 1px solid #1c1c1e;
+  color: white;
+  padding: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 0.5rem;
+}
+
+.timeSlot:active {
+  background: #2c2c2e;
+}
+
+.timeSlotActive {
+  background: #2c2c2e;
+  border-color: white;
+}
+
+/* Book button */
+.bookButtonContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to top, #000000 80%, transparent);
+  max-width: 480px;
+  margin: 0 auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+.bookButton {
+  width: 100%;
+  background: white;
+  color: #000000;
+  border: none;
+  padding: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  border-radius: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bookButton:active {
+  opacity: 0.8;
+}

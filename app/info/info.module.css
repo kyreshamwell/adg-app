@@ -1,0 +1,153 @@
+/* Info Page - iOS Style */
+
+.container {
+  min-height: 100vh;
+  background: #000000;
+  padding-bottom: 6rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: #000000;
+}
+
+.title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #8e8e93;
+  font-size: 0.9375rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Sections */
+.section {
+  padding: 0 1rem 2rem 1rem;
+}
+
+.sectionTitle {
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0.5rem;
+}
+
+/* Info cards */
+.infoCard {
+  background: #1c1c1e;
+  border-radius: 0.625rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.infoItem {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.infoIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.infoContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoLabel {
+  color: white;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.infoValue {
+  color: #8e8e93;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.infoValueLink {
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.infoValueLink:active {
+  opacity: 0.6;
+}
+
+.infoSubtext {
+  color: #636366;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.infoLink {
+  color: #0a84ff;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 0.25rem;
+}
+
+.infoLink:active {
+  opacity: 0.6;
+}
+
+/* Hours grid */
+.hoursGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  color: #8e8e93;
+  font-size: 1rem;
+}
+
+.hoursGrid span:nth-child(odd) {
+  color: white;
+  font-weight: 500;
+}
+
+/* Social buttons */
+.socialButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #1c1c1e;
+  color: white;
+  padding: 1.125rem 1.5rem;
+  border-radius: 0.625rem;
+  text-decoration: none;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.socialButton:active {
+  background: #2c2c2e;
+}
+
+.socialIcon {
+  font-size: 1.5rem;
+}

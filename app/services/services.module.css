@@ -1,0 +1,150 @@
+/* iOS Style - Dark Mode */
+
+/* Container */
+.container {
+  min-height: 100vh;
+  background: #000000;
+  padding: 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: #000000;
+}
+
+.title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #8e8e93;
+  font-size: 0.9375rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Number of people selector */
+.peopleSelector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1c1c1e;
+  margin: 1rem 1rem;
+  padding: 1rem;
+  border-radius: 0.625rem;
+}
+
+.peopleSelectorLabel {
+  color: white;
+  font-size: 1.0625rem;
+  font-weight: 400;
+}
+
+.peopleSelectorButtons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.peopleSelectorButton {
+  background: #2c2c2e;
+  color: white;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.peopleSelectorButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.peopleSelectorButton:active:not(:disabled) {
+  opacity: 0.7;
+}
+
+.peopleSelectorCount {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  min-width: 2rem;
+  text-align: center;
+}
+
+/* Services List - iOS grouped style */
+.servicesGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #1c1c1e;
+  margin: 1rem 1rem 0 1rem;
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+/* Service Row - iOS list item */
+.serviceCard {
+  background: #1c1c1e;
+  border: none;
+  border-bottom: 0.5px solid #38383a;
+  padding: 0.875rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.serviceCard:last-child {
+  border-bottom: none;
+}
+
+.serviceCard:active {
+  background: #2c2c2e;
+}
+
+/* Left side - name and duration */
+.serviceName {
+  color: white;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  margin: 0 0 0.25rem 0;
+}
+
+.serviceDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.duration {
+  color: #8e8e93;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+/* Right side - price */
+.price {
+  color: white;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
