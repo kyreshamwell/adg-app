@@ -24,9 +24,19 @@ export default function Home() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Set up reCAPTCHA verifier
+  // Set up reCAPTCHA verifier - recreate when view changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && (view === 'login' || view === 'signup')) {
+      // Clear existing verifier if it exists
+      if ((window as any).recaptchaVerifier) {
+        try {
+          (window as any).recaptchaVerifier.clear();
+        } catch (e) {
+          // Ignore if already cleared
+        }
+      }
+
+      // Create new verifier
       (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         callback: () => {
@@ -34,7 +44,7 @@ export default function Home() {
         }
       });
     }
-  }, []);
+  }, [view]);
 
   const handleLoginSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,6 +200,9 @@ export default function Home() {
             </button>
           </form>
         </div>
+
+        {/* Hidden reCAPTCHA container */}
+        <div id="recaptcha-container"></div>
       </div>
     );
   }
@@ -275,6 +288,9 @@ export default function Home() {
             </button>
           </form>
         </div>
+
+        {/* Hidden reCAPTCHA container */}
+        <div id="recaptcha-container"></div>
       </div>
     );
   }
