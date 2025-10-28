@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './booking.module.css';
 
-export default function Booking() {
+function BookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const serviceName = searchParams.get('service') || 'Service';
@@ -123,5 +123,13 @@ export default function Booking() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Booking() {
+  return (
+    <Suspense fallback={<div className={styles.container}>Loading...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 }
