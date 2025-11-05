@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bebas_Neue, Righteous, Oswald, Anton, Russo_One, Montserrat, Poppins } from "next/font/google";
 import "./globals.css";
 import TabBar from "./components/TabBar";
+import { CartProvider } from "@/contexts/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -69,8 +70,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${righteous.variable} ${oswald.variable} ${anton.variable} ${russoOne.variable} ${montserrat.variable} ${poppins.variable} antialiased`}
       >
-        {children}
-        <TabBar />
+        <CartProvider>
+          {children}
+          <TabBar />
+        </CartProvider>
       </body>
     </html>
   );

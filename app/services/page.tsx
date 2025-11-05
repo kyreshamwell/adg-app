@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useCart } from '@/contexts/CartContext';
 import styles from './services.module.css';
 
 interface Service {
@@ -18,7 +19,7 @@ interface Service {
 
 export default function Services() {
   const router = useRouter();
-  const [numberOfPeople, setNumberOfPeople] = useState(1);
+  const { addToCart, getItemCount } = useCart();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,42 +54,33 @@ export default function Services() {
     fetchServices();
   }, []);
 
-  const handleServiceClick = (serviceId: string) => {
-    const service = services.find(s => s.id === serviceId);
-    if (service) {
-      // Navigate to booking page with service details and number of people
-      router.push(`/booking?service=${encodeURIComponent(service.name)}&price=${service.price}&duration=${service.duration}&people=${numberOfPeople}`);
-    }
+  const handleAddToCart = (service: Service) => {
+    addToCart({
+      serviceId: service.id,
+      serviceName: service.name,
+      price: service.price,
+      duration: service.duration,
+      category: service.category,
+    });
+  };
+
+  const handleViewCart = () => {
+    router.push('/cart');
   };
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Services</h1>
-        <p className={styles.subtitle}>Choose your service</p>
-      </header>
-
-      {/* Number of people selector */}
-      <div className={styles.peopleSelector}>
-        <span className={styles.peopleSelectorLabel}>Number of people</span>
-        <div className={styles.peopleSelectorButtons}>
-          <button
-            className={styles.peopleSelectorButton}
-            onClick={() => setNumberOfPeople(Math.max(1, numberOfPeople - 1))}
-            disabled={numberOfPeople === 1}
-          >
-            −
-          </button>
-          <span className={styles.peopleSelectorCount}>{numberOfPeople}</span>
-          <button
-            className={styles.peopleSelectorButton}
-            onClick={() => setNumberOfPeople(Math.min(5, numberOfPeople + 1))}
-            disabled={numberOfPeople === 5}
-          >
-            +
-          </button>
+        <div>
+          <h1 className={styles.title}>Services</h1>
+          <p className={styles.subtitle}>Select services and add to cart</p>
         </div>
-      </div>
+        {getItemCount() > 0 && (
+          <button className={styles.cartButton} onClick={handleViewCart}>
+            🛒 Cart ({getItemCount()})
+          </button>
+        )}
+      </header>
 
       <div className={styles.servicesGrid}>
         {loading ? (
@@ -100,13 +92,21 @@ export default function Services() {
             <div
               key={service.id}
               className={styles.serviceCard}
-              onClick={() => handleServiceClick(service.id)}
             >
               <div className={styles.serviceDetails}>
                 <h3 className={styles.serviceName}>{service.name}</h3>
+                <p className={styles.description}>{service.description}</p>
                 <span className={styles.duration}>{service.duration} min</span>
               </div>
-              <span className={styles.price}>${service.price}</span>
+              <div className={styles.serviceFooter}>
+                <span className={styles.price}>${service.price}</span>
+                <button
+                  className={styles.addButton}
+                  onClick={() => handleAddToCart(service)}
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
           ))
         )}

@@ -1,0 +1,218 @@
+/* iOS Style - Dark Mode */
+
+.container {
+  min-height: 100vh;
+  background: #000000;
+  padding: 0 0 6rem 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: #000000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.clearButton {
+  background: transparent;
+  color: #ff3b30;
+  border: none;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: opacity 0.15s;
+}
+
+.clearButton:active {
+  opacity: 0.5;
+}
+
+/* Empty Cart */
+.emptyCart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.emptyTitle {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.emptyText {
+  color: #8e8e93;
+  font-size: 1rem;
+  margin: 0 0 2rem 0;
+}
+
+/* Cart Items */
+.cartItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #1c1c1e;
+  margin: 0 1rem 1rem 1rem;
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.cartItem {
+  background: #1c1c1e;
+  border-bottom: 0.5px solid #38383a;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cartItem:last-child {
+  border-bottom: none;
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemName {
+  color: white;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.itemDuration {
+  color: #8e8e93;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.itemFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemPrice {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.removeButton {
+  background: transparent;
+  color: #ff3b30;
+  border: none;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: opacity 0.15s;
+}
+
+.removeButton:active {
+  opacity: 0.5;
+}
+
+/* Summary */
+.summary {
+  background: #1c1c1e;
+  margin: 0 1rem 1rem 1rem;
+  padding: 1rem;
+  border-radius: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryLabel {
+  color: white;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.summaryValue {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.summaryPrice {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Actions */
+.actions {
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.continueButton {
+  background: #2c2c2e;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.continueButton:active {
+  opacity: 0.7;
+}
+
+.bookButton {
+  background: #007aff;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.bookButton:active {
+  opacity: 0.7;
+}
