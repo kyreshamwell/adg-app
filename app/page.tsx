@@ -2,13 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   PhoneAuthProvider,
-  signInWithCredential
+  signInWithCredential,
+  ConfirmationResult
 } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
+
+// Extend Window interface to include recaptchaVerifier
+declare global {
+  interface Window {
+    recaptchaVerifier?: RecaptchaVerifier;
+  }
+}
+import { doc, setDoc } from 'firebase/firestore';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -20,7 +30,7 @@ export default function Home() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [fullName, setFullName] = useState('');
-  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -34,18 +44,18 @@ export default function Home() {
       }
 
       // Clear existing verifier if it exists
-      if ((window as any).recaptchaVerifier) {
+      if (window.recaptchaVerifier) {
         try {
-          (window as any).recaptchaVerifier.clear();
-          delete (window as any).recaptchaVerifier;
+          window.recaptchaVerifier.clear();
+          delete window.recaptchaVerifier;
         } catch (e) {
           // Ignore if already cleared
         }
       }
 
       // Create new verifier only if it doesn't exist
-      if (!(window as any).recaptchaVerifier) {
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
           size: 'invisible',
           callback: () => {
             // reCAPTCHA solved
@@ -56,10 +66,10 @@ export default function Home() {
 
     // Cleanup function
     return () => {
-      if ((window as any).recaptchaVerifier) {
+      if (window.recaptchaVerifier) {
         try {
-          (window as any).recaptchaVerifier.clear();
-          delete (window as any).recaptchaVerifier;
+          window.recaptchaVerifier.clear();
+          delete window.recaptchaVerifier;
         } catch (e) {
           // Ignore errors during cleanup
         }
@@ -73,23 +83,33 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const appVerifier = (window as any).recaptchaVerifier;
+      const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        setError('reCAPTCHA not initialized. Please refresh the page.');
+        return;
+      }
+
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+1${phoneNumber.replace(/\D/g, '')}`;
 
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(confirmation);
       setShowLoginVerification(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Firebase Auth Error:', err);
-      // More detailed error messages
-      if (err.code === 'auth/billing-not-enabled') {
-        setError('Billing not enabled. Please: 1) Enable billing in Firebase Console, 2) Enable Phone Authentication in Authentication > Sign-in method, 3) Wait 5-10 minutes for activation.');
-      } else if (err.code === 'auth/quota-exceeded') {
-        setError('SMS quota exceeded. Please check your Firebase billing.');
-      } else if (err.code === 'auth/invalid-phone-number') {
-        setError('Invalid phone number format. Please include country code (e.g., +15551234567)');
+
+      // Type guard to check if it's a FirebaseError
+      if (err instanceof FirebaseError) {
+        if (err.code === 'auth/billing-not-enabled') {
+          setError('Billing not enabled. Please: 1) Enable billing in Firebase Console, 2) Enable Phone Authentication in Authentication > Sign-in method, 3) Wait 5-10 minutes for activation.');
+        } else if (err.code === 'auth/quota-exceeded') {
+          setError('SMS quota exceeded. Please check your Firebase billing.');
+        } else if (err.code === 'auth/invalid-phone-number') {
+          setError('Invalid phone number format. Please include country code (e.g., +15551234567)');
+        } else {
+          setError(err.message || `Failed to send code. Error: ${err.code || 'Unknown'}`);
+        }
       } else {
-        setError(err.message || `Failed to send code. Error: ${err.code || 'Unknown'}`);
+        setError('An unexpected error occurred. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -102,23 +122,33 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const appVerifier = (window as any).recaptchaVerifier;
+      const appVerifier = window.recaptchaVerifier;
+      if (!appVerifier) {
+        setError('reCAPTCHA not initialized. Please refresh the page.');
+        return;
+      }
+
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+1${phoneNumber.replace(/\D/g, '')}`;
 
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(confirmation);
       setShowSignupVerification(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Firebase Auth Error:', err);
-      // More detailed error messages
-      if (err.code === 'auth/billing-not-enabled') {
-        setError('Billing not enabled. Please: 1) Enable billing in Firebase Console, 2) Enable Phone Authentication in Authentication > Sign-in method, 3) Wait 5-10 minutes for activation.');
-      } else if (err.code === 'auth/quota-exceeded') {
-        setError('SMS quota exceeded. Please check your Firebase billing.');
-      } else if (err.code === 'auth/invalid-phone-number') {
-        setError('Invalid phone number format. Please include country code (e.g., +15551234567)');
+
+      // Type guard to check if it's a FirebaseError
+      if (err instanceof FirebaseError) {
+        if (err.code === 'auth/billing-not-enabled') {
+          setError('Billing not enabled. Please: 1) Enable billing in Firebase Console, 2) Enable Phone Authentication in Authentication > Sign-in method, 3) Wait 5-10 minutes for activation.');
+        } else if (err.code === 'auth/quota-exceeded') {
+          setError('SMS quota exceeded. Please check your Firebase billing.');
+        } else if (err.code === 'auth/invalid-phone-number') {
+          setError('Invalid phone number format. Please include country code (e.g., +15551234567)');
+        } else {
+          setError(err.message || `Failed to send code. Error: ${err.code || 'Unknown'}`);
+        }
       } else {
-        setError(err.message || `Failed to send code. Error: ${err.code || 'Unknown'}`);
+        setError('An unexpected error occurred. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -130,12 +160,42 @@ export default function Home() {
     setLoading(true);
 
     try {
-      await confirmationResult.confirm(verificationCode);
+      // Check if confirmationResult exists
+      if (!confirmationResult) {
+        setError('No confirmation result found. Please request a new code.');
+        return;
+      }
+
+      // Verify the SMS code and sign in
+      const userCredential = await confirmationResult.confirm(verificationCode);
+      const user = userCredential.user;
+
+      // If this is signup (not login), save user data to Firestore
+      if (view === 'signup' && fullName) {
+        await setDoc(doc(db, 'users', user.uid), {
+          fullName: fullName,
+          phoneNumber: user.phoneNumber,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
       // Successfully signed in
       router.push('/services');
-    } catch (err: any) {
-      setError('Invalid verification code');
-      console.error(err);
+    } catch (err) {
+      console.error('Verification Error:', err);
+
+      // Type guard to check if it's a FirebaseError
+      if (err instanceof FirebaseError) {
+        if (err.code === 'auth/invalid-verification-code') {
+          setError('Invalid verification code. Please check and try again.');
+        } else if (err.code === 'auth/code-expired') {
+          setError('Verification code expired. Please request a new code.');
+        } else {
+          setError(err.message || 'Failed to verify code.');
+        }
+      } else {
+        setError('Invalid verification code');
+      }
     } finally {
       setLoading(false);
     }

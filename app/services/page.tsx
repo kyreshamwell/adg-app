@@ -1,58 +1,63 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import styles from './services.module.css';
 
-// Sample services data (later this will come from backend)
-const services = [
-  {
-    id: 1,
-    name: 'Classic Haircut',
-    price: 35,
-    duration: '30 min'
-  },
-  {
-    id: 2,
-    name: 'Fade',
-    price: 40,
-    duration: '45 min'
-  },
-  {
-    id: 3,
-    name: 'Beard Trim',
-    price: 20,
-    duration: '20 min'
-  },
-  {
-    id: 4,
-    name: 'Haircut + Beard',
-    price: 50,
-    duration: '50 min'
-  },
-  {
-    id: 5,
-    name: 'Hot Towel Shave',
-    price: 45,
-    duration: '40 min'
-  },
-  {
-    id: 6,
-    name: 'Kids Haircut',
-    price: 25,
-    duration: '25 min'
-  }
-];
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  duration: number;
+  category: string;
+  active: boolean;
+}
 
 export default function Services() {
   const router = useRouter();
   const [numberOfPeople, setNumberOfPeople] = useState(1);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleServiceClick = (serviceId: number) => {
+  // Fetch services from Firestore on component mount
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        // Query only active services
+        const q = query(
+          collection(db, 'services'),
+          where('active', '==', true)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const servicesData: Service[] = [];
+
+        querySnapshot.forEach((doc) => {
+          servicesData.push({
+            id: doc.id,
+            ...doc.data()
+          } as Service);
+        });
+
+        setServices(servicesData);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  const handleServiceClick = (serviceId: string) => {
     const service = services.find(s => s.id === serviceId);
     if (service) {
       // Navigate to booking page with service details and number of people
-      router.push(`/booking?service=${encodeURIComponent(service.name)}&price=${service.price}&duration=${encodeURIComponent(service.duration)}&people=${numberOfPeople}`);
+      router.push(`/booking?service=${encodeURIComponent(service.name)}&price=${service.price}&duration=${service.duration}&people=${numberOfPeople}`);
     }
   };
 
@@ -86,19 +91,25 @@ export default function Services() {
       </div>
 
       <div className={styles.servicesGrid}>
-        {services.map((service) => (
-          <div
-            key={service.id}
-            className={styles.serviceCard}
-            onClick={() => handleServiceClick(service.id)}
-          >
-            <div className={styles.serviceDetails}>
-              <h3 className={styles.serviceName}>{service.name}</h3>
-              <span className={styles.duration}>{service.duration}</span>
+        {loading ? (
+          <p style={{ textAlign: 'center', width: '100%', padding: '2rem' }}>Loading services...</p>
+        ) : services.length === 0 ? (
+          <p style={{ textAlign: 'center', width: '100%', padding: '2rem' }}>No services available</p>
+        ) : (
+          services.map((service) => (
+            <div
+              key={service.id}
+              className={styles.serviceCard}
+              onClick={() => handleServiceClick(service.id)}
+            >
+              <div className={styles.serviceDetails}>
+                <h3 className={styles.serviceName}>{service.name}</h3>
+                <span className={styles.duration}>{service.duration} min</span>
+              </div>
+              <span className={styles.price}>${service.price}</span>
             </div>
-            <span className={styles.price}>${service.price}</span>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
