@@ -59,8 +59,17 @@ export default function Home() {
       setConfirmationResult(confirmation);
       setShowLoginVerification(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to send code');
-      console.error(err);
+      console.error('Firebase Auth Error:', err);
+      // More detailed error messages
+      if (err.code === 'auth/billing-not-enabled') {
+        setError('Billing not enabled. Please: 1) Enable billing in Firebase Console, 2) Enable Phone Authentication in Authentication > Sign-in method, 3) Wait 5-10 minutes for activation.');
+      } else if (err.code === 'auth/quota-exceeded') {
+        setError('SMS quota exceeded. Please check your Firebase billing.');
+      } else if (err.code === 'auth/invalid-phone-number') {
+        setError('Invalid phone number format. Please include country code (e.g., +15551234567)');
+      } else {
+        setError(err.message || `Failed to send code. Error: ${err.code || 'Unknown'}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -79,8 +88,17 @@ export default function Home() {
       setConfirmationResult(confirmation);
       setShowSignupVerification(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to send code');
-      console.error(err);
+      console.error('Firebase Auth Error:', err);
+      // More detailed error messages
+      if (err.code === 'auth/billing-not-enabled') {
+        setError('Billing not enabled. Please: 1) Enable billing in Firebase Console, 2) Enable Phone Authentication in Authentication > Sign-in method, 3) Wait 5-10 minutes for activation.');
+      } else if (err.code === 'auth/quota-exceeded') {
+        setError('SMS quota exceeded. Please check your Firebase billing.');
+      } else if (err.code === 'auth/invalid-phone-number') {
+        setError('Invalid phone number format. Please include country code (e.g., +15551234567)');
+      } else {
+        setError(err.message || `Failed to send code. Error: ${err.code || 'Unknown'}`);
+      }
     } finally {
       setLoading(false);
     }
