@@ -27,23 +27,44 @@ export default function Home() {
   // Set up reCAPTCHA verifier - recreate when view changes
   useEffect(() => {
     if (typeof window !== 'undefined' && (view === 'login' || view === 'signup')) {
+      // Clear the reCAPTCHA container element completely
+      const container = document.getElementById('recaptcha-container');
+      if (container) {
+        container.innerHTML = '';
+      }
+
       // Clear existing verifier if it exists
       if ((window as any).recaptchaVerifier) {
         try {
           (window as any).recaptchaVerifier.clear();
+          delete (window as any).recaptchaVerifier;
         } catch (e) {
           // Ignore if already cleared
         }
       }
 
-      // Create new verifier
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {
-          // reCAPTCHA solved
-        }
-      });
+      // Create new verifier only if it doesn't exist
+      if (!(window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible',
+          callback: () => {
+            // reCAPTCHA solved
+          }
+        });
+      }
     }
+
+    // Cleanup function
+    return () => {
+      if ((window as any).recaptchaVerifier) {
+        try {
+          (window as any).recaptchaVerifier.clear();
+          delete (window as any).recaptchaVerifier;
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
+      }
+    };
   }, [view]);
 
   const handleLoginSendCode = async (e: React.FormEvent) => {
