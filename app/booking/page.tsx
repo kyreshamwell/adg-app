@@ -20,6 +20,7 @@ function BookingContent() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
+  const [weekOffset, setWeekOffset] = useState(0); // 0 = this week, 1 = next week, etc.
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -109,14 +110,14 @@ function BookingContent() {
     return hours * 60 + minutes;
   };
 
-  // Generate next 7 days
+  // Generate 7 days based on weekOffset
   const getNextWeek = () => {
     const days = [];
     const today = new Date();
 
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
-      date.setDate(today.getDate() + i);
+      date.setDate(today.getDate() + (weekOffset * 7) + i);
       days.push({
         full: date.toISOString().split('T')[0],
         day: date.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -125,6 +126,20 @@ function BookingContent() {
       });
     }
     return days;
+  };
+
+  const handlePreviousWeek = () => {
+    if (weekOffset > 0) {
+      setWeekOffset(weekOffset - 1);
+      setSelectedDate(null); // Clear selection when changing weeks
+      setSelectedTime(null);
+    }
+  };
+
+  const handleNextWeek = () => {
+    setWeekOffset(weekOffset + 1);
+    setSelectedDate(null); // Clear selection when changing weeks
+    setSelectedTime(null);
   };
 
   // Available time slots in 30-minute increments
@@ -165,8 +180,10 @@ function BookingContent() {
     setLoading(true);
 
     try {
+      console.log('Creating booking...');
+
       // Create booking document
-      await addDoc(collection(db, 'bookings'), {
+      const docRef = await addDoc(collection(db, 'bookings'), {
         userId: user.uid,
         phoneNumber: user.phoneNumber,
         date: selectedDate,
@@ -184,11 +201,16 @@ function BookingContent() {
         createdAt: new Date().toISOString(),
       });
 
+      console.log('Booking created with ID:', docRef.id);
+
       // Clear cart after successful booking
       clearCart();
+      console.log('Cart cleared');
 
       // Navigate to appointments
+      console.log('Navigating to appointments...');
       router.push('/appointments');
+      console.log('Navigation triggered');
     } catch (error) {
       console.error('Error creating booking:', error);
       alert('Failed to create booking. Please try again.');
@@ -227,7 +249,27 @@ function BookingContent() {
 
       {/* Week view */}
       <div className={styles.weekContainer}>
-        <h2 className={styles.sectionTitle}>Select Date</h2>
+        <div className={styles.weekHeader}>
+          <h2 className={styles.sectionTitle}>Select Date</h2>
+          <div className={styles.weekNavigation}>
+            <button
+              className={styles.weekNavButton}
+              onClick={handlePreviousWeek}
+              disabled={weekOffset === 0}
+            >
+              ←
+            </button>
+            <span className={styles.weekLabel}>
+              {weekOffset === 0 ? 'This Week' : `${weekOffset} Week${weekOffset > 1 ? 's' : ''} Ahead`}
+            </span>
+            <button
+              className={styles.weekNavButton}
+              onClick={handleNextWeek}
+            >
+              →
+            </button>
+          </div>
+        </div>
         <div className={styles.weekGrid}>
           {week.map((day) => (
             <button

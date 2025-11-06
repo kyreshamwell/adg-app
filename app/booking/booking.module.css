@@ -108,6 +108,52 @@
   margin-bottom: 2rem;
 }
 
+.weekHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 1.5rem;
+}
+
+.weekNavigation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.weekNavButton {
+  background: #1c1c1e;
+  color: white;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weekNavButton:active:not(:disabled) {
+  opacity: 0.7;
+}
+
+.weekNavButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.weekLabel {
+  color: #8e8e93;
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 6rem;
+  text-align: center;
+}
+
 .weekGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
