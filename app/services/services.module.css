@@ -4,7 +4,7 @@
 .container {
   min-height: 100vh;
   background: #000000;
-  padding: 0;
+  padding: 0 0 6rem 0;
   max-width: 480px;
   margin: 0 auto;
 }

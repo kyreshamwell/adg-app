@@ -77,7 +77,7 @@ export default function Services() {
         </div>
         {getItemCount() > 0 && (
           <button className={styles.cartButton} onClick={handleViewCart}>
-            🛒 Cart ({getItemCount()})
+            Cart ({getItemCount()})
           </button>
         )}
       </header>
