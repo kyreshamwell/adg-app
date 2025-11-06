@@ -4,8 +4,14 @@ import { useState, Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import { auth, db } from '@/lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import styles from './booking.module.css';
+
+interface ExistingBooking {
+  date: string;
+  time: string;
+  totalDuration: number;
+}
 
 function BookingContent() {
   const router = useRouter();
@@ -13,6 +19,7 @@ function BookingContent() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -20,6 +27,85 @@ function BookingContent() {
       router.push('/services');
     }
   }, [cart, router]);
+
+  // Fetch booked slots when date changes
+  useEffect(() => {
+    const fetchBookedSlots = async () => {
+      if (!selectedDate) {
+        setBookedSlots(new Set());
+        return;
+      }
+
+      try {
+        const q = query(
+          collection(db, 'bookings'),
+          where('date', '==', selectedDate),
+          where('status', '==', 'confirmed')
+        );
+
+        const querySnapshot = await getDocs(q);
+        const bookings: ExistingBooking[] = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          bookings.push({
+            date: data.date,
+            time: data.time,
+            totalDuration: data.totalDuration,
+          });
+        });
+
+        // Calculate which time slots are blocked
+        const blocked = new Set<string>();
+        const allSlots = [
+          '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+          '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM',
+          '5:00 PM', '6:00 PM'
+        ];
+
+        // For each existing booking, block overlapping slots
+        bookings.forEach((booking) => {
+          const bookingStart = parseTime(booking.time);
+          const bookingEnd = bookingStart + booking.totalDuration;
+
+          allSlots.forEach((slot) => {
+            const slotStart = parseTime(slot);
+            const slotEnd = slotStart + getTotalDuration();
+
+            // Check if slots overlap
+            if (
+              (slotStart >= bookingStart && slotStart < bookingEnd) ||
+              (slotEnd > bookingStart && slotEnd <= bookingEnd) ||
+              (slotStart <= bookingStart && slotEnd >= bookingEnd)
+            ) {
+              blocked.add(slot);
+            }
+          });
+        });
+
+        setBookedSlots(blocked);
+      } catch (error) {
+        console.error('Error fetching booked slots:', error);
+      }
+    };
+
+    fetchBookedSlots();
+  }, [selectedDate, getTotalDuration]);
+
+  // Helper function to parse time to minutes since midnight
+  const parseTime = (timeStr: string): number => {
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) return 0;
+
+    let hours = parseInt(match[1]);
+    const minutes = parseInt(match[2]);
+    const period = match[3].toUpperCase();
+
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  };
 
   // Generate next 7 days
   const getNextWeek = () => {
@@ -151,15 +237,19 @@ function BookingContent() {
         <div className={styles.timeSlotsContainer}>
           <h2 className={styles.sectionTitle}>Select Time</h2>
           <div className={styles.timeSlots}>
-            {availableSlots.map((time) => (
-              <button
-                key={time}
-                className={`${styles.timeSlot} ${selectedTime === time ? styles.timeSlotActive : ''}`}
-                onClick={() => setSelectedTime(time)}
-              >
-                {time}
-              </button>
-            ))}
+            {availableSlots.map((time) => {
+              const isBooked = bookedSlots.has(time);
+              return (
+                <button
+                  key={time}
+                  className={`${styles.timeSlot} ${selectedTime === time ? styles.timeSlotActive : ''} ${isBooked ? styles.timeSlotBooked : ''}`}
+                  onClick={() => !isBooked && setSelectedTime(time)}
+                  disabled={isBooked}
+                >
+                  {time} {isBooked && '(Booked)'}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

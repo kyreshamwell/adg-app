@@ -201,6 +201,17 @@
   border-color: white;
 }
 
+.timeSlotBooked {
+  background: #1c1c1e;
+  color: #8e8e93;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.timeSlotBooked:active {
+  background: #1c1c1e;
+}
+
 /* Book button */
 .bookButtonContainer {
   position: fixed;
