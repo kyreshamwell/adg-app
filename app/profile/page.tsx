@@ -1,25 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { auth, db } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import styles from './profile.module.css';
 
 export default function Profile() {
   const router = useRouter();
   const [smsReminders, setSmsReminders] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<{ name: string; phone: string } | null>(null);
 
-  // TODO: Get from backend/auth
-  const user = {
-    name: 'John Doe',
-    phone: '(555) 123-4567'
-  };
+  // Fetch user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        router.push('/');
+        return;
+      }
 
-  const handleLogout = () => {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setUser({
+            name: data.fullName || 'User',
+            phone: data.phoneNumber || currentUser.phoneNumber || 'N/A'
+          });
+        } else {
+          // Fallback if user doc doesn't exist
+          setUser({
+            name: 'User',
+            phone: currentUser.phoneNumber || 'N/A'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [router]);
+
+  const handleLogout = async () => {
     if (confirm('Are you sure you want to log out?')) {
-      // TODO: Clear auth session
-      router.push('/');
+      try {
+        await signOut(auth);
+        router.push('/');
+      } catch (error) {
+        console.error('Error logging out:', error);
+        alert('Failed to log out');
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Profile</h1>
+        </header>
+        <p style={{ color: '#8e8e93', textAlign: 'center', padding: '2rem' }}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Profile</h1>
+        </header>
+        <p style={{ color: '#8e8e93', textAlign: 'center', padding: '2rem' }}>User not found</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

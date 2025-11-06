@@ -48,6 +48,38 @@
   margin-bottom: 0.5rem;
 }
 
+/* Cart Summary */
+.cartSummary {
+  margin: 0 1rem 1rem 1rem;
+  padding: 1rem;
+  background: #1c1c1e;
+  border-radius: 0.625rem;
+}
+
+.servicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.serviceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.serviceItemName {
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.serviceItemPrice {
+  color: #8e8e93;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
 .serviceName {
   color: white;
   font-size: 1.75rem;

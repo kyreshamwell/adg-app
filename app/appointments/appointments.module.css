@@ -86,6 +86,20 @@
   gap: 0.5rem;
 }
 
+.serviceItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.5rem 0;
+}
+
+.serviceItem {
+  color: #8e8e93;
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: 400;
+}
+
 .appointmentService {
   color: white;
   font-size: 1.5rem;

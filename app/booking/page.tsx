@@ -1,24 +1,25 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, Suspense, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/contexts/CartContext';
+import { auth, db } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 import styles from './booking.module.css';
 
 function BookingContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const serviceName = searchParams.get('service') || 'Service';
-  const servicePrice = searchParams.get('price') || '0';
-  const serviceDuration = searchParams.get('duration') || '0 min';
-  const numberOfPeople = parseInt(searchParams.get('people') || '1');
-
+  const { cart, getTotalPrice, getTotalDuration, clearCart } = useCart();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Calculate total duration (30 min per person)
-  const durationMinutes = parseInt(serviceDuration.split(' ')[0]);
-  const totalMinutes = durationMinutes * numberOfPeople;
-  const totalDuration = `${totalMinutes} min`;
+  // Redirect if cart is empty
+  useEffect(() => {
+    if (cart.length === 0) {
+      router.push('/services');
+    }
+  }, [cart, router]);
 
   // Generate next 7 days
   const getNextWeek = () => {
@@ -54,12 +55,48 @@ function BookingContent() {
 
   const week = getNextWeek();
 
-  const handleBooking = () => {
-    if (selectedDate && selectedTime) {
-      const totalPrice = parseInt(servicePrice) * numberOfPeople;
-      // TODO: Save booking to backend/database
-      // For now, just navigate to appointments page
+  const handleBooking = async () => {
+    if (!selectedDate || !selectedTime || cart.length === 0) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert('Please log in to book an appointment');
+      router.push('/');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Create booking document
+      await addDoc(collection(db, 'bookings'), {
+        userId: user.uid,
+        phoneNumber: user.phoneNumber,
+        date: selectedDate,
+        time: selectedTime,
+        status: 'confirmed',
+        items: cart.map(item => ({
+          serviceId: item.serviceId,
+          serviceName: item.serviceName,
+          price: item.price,
+          duration: item.duration,
+          category: item.category,
+        })),
+        totalPrice: getTotalPrice(),
+        totalDuration: getTotalDuration(),
+        createdAt: new Date().toISOString(),
+      });
+
+      // Clear cart after successful booking
+      clearCart();
+
+      // Navigate to appointments
       router.push('/appointments');
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      alert('Failed to create booking. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,16 +104,29 @@ function BookingContent() {
     <div className={styles.container}>
       {/* Header */}
       <header className={styles.header}>
-        <button className={styles.backButton} onClick={() => window.history.back()}>
+        <button className={styles.backButton} onClick={() => router.push('/cart')}>
           ← Back
         </button>
         <div className={styles.serviceInfo}>
-          <h1 className={styles.serviceName}>{serviceName}</h1>
+          <h1 className={styles.serviceName}>Book Appointment</h1>
           <p className={styles.serviceDetails}>
-            ${servicePrice} × {numberOfPeople} {numberOfPeople > 1 ? 'people' : 'person'} • {totalDuration}
+            {cart.length} {cart.length === 1 ? 'service' : 'services'} • ${getTotalPrice()} • {getTotalDuration()} min
           </p>
         </div>
       </header>
+
+      {/* Cart Summary */}
+      <div className={styles.cartSummary}>
+        <h2 className={styles.sectionTitle}>Your Services</h2>
+        <div className={styles.servicesList}>
+          {cart.map((item) => (
+            <div key={item.id} className={styles.serviceItem}>
+              <span className={styles.serviceItemName}>{item.serviceName}</span>
+              <span className={styles.serviceItemPrice}>${item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Week view */}
       <div className={styles.weekContainer}>
@@ -117,8 +167,12 @@ function BookingContent() {
       {/* Book button */}
       {selectedDate && selectedTime && (
         <div className={styles.bookButtonContainer}>
-          <button className={styles.bookButton} onClick={handleBooking}>
-            Confirm Booking
+          <button
+            className={styles.bookButton}
+            onClick={handleBooking}
+            disabled={loading}
+          >
+            {loading ? 'Booking...' : 'Confirm Booking'}
           </button>
         </div>
       )}
