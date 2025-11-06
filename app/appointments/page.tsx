@@ -202,16 +202,6 @@ export default function Appointments() {
           ))}
         </div>
       )}
-
-      {/* Bottom navigation */}
-      <div className={styles.bottomNav}>
-        <button
-          className={styles.navButton}
-          onClick={() => router.push('/services')}
-        >
-          Book Again
-        </button>
-      </div>
     </div>
   );
 }
